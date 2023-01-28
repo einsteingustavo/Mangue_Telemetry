@@ -19,11 +19,11 @@ import sqlite3
 import json
 import pandas as pd
 
-broker = "fe80::b982:1519:74d7:f929"
+broker = "64.227.19.172"
 port = 1883
 topic = "/logging"
 client_id = f'python-mqtt-{random.randint(0, 1000)}'
-username = 'owntracks'
+username = 'manguebaja'
 password = 'aratucampeao'
 
 
@@ -412,7 +412,7 @@ class Ui_MainWindow(object):
         self.fuel.setGeometry(QtCore.QRect(510, 60, 161, 200))
         self.fuel.setObjectName("fuel")
         self.fuel.setText("")
-        self.fuel.setPixmap(QtGui.QPixmap("fuel_full.jpg"))
+        self.fuel.setPixmap(QtGui.QPixmap("fuel_full_vector.jpg"))
         self.fuel.setScaledContents(True)
 
         self.batt = QtWidgets.QLabel(self.centralwidget)
