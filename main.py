@@ -107,80 +107,29 @@ def connect_mqtt(broker, port, client_id, username, password):
     return client
 
 
-def publish(client, topic, msg):
-    result = client.publish(topic, msg)
-    status = result[0]
-    if status == 0:
-        print(f"Send `{msg}` to topic `{topic}`")
-    else:
-        print(f"Failed to send message to topic {topic}")
+
 
 
 def subscribe(client: mqtt_client, topic):
     def on_message(client, userdata, msg):
 
-        mqttmsg = msg.payload.decode()
+        mqtt_msg_str = msg.payload.decode('utf-8')
+        mqtt_msg_json = json.loads(mqtt_msg_str)
 
-        if mqttmsg[0] == 22:
-            car.append("MB2")
-            accx.append(mqttmsg[1] * 0.061 / 1000)
-            accy.append(mqttmsg[2] * 0.061 / 1000)
-            accz.append(mqttmsg[3] * 0.061 / 1000)
-            rpm.append((mqttmsg[7] / 65535) * 5000)
-            speed.append((mqttmsg[8] / 65535) * 60)
-            temp_motor.append(mqttmsg[9])
-            flags.append(mqttmsg[10])
-            soc.append(mqttmsg[11])
-            temp_cvt.append(mqttmsg[12])
-            volt.append(mqttmsg[13])
-            latitude.append(mqttmsg[14])
-            longitude.append(mqttmsg[15])
-            timestamp.append(mqttmsg[16])
+        accx.append(mqtt_msg_json["accx"])
+        accy.append(mqtt_msg_json["accy"])
+        accz.append(mqtt_msg_json["accz"])
+        rpm.append(mqtt_msg_json["rpm"])
+        speed.append(mqtt_msg_json["speed"])
+        temp_motor.append(mqtt_msg_json["motor"])
+        flags.append(mqtt_msg_json["flags"])
+        soc.append(mqtt_msg_json["soc"])
+        temp_cvt.append(mqtt_msg_json["cvt"])
+        volt.append(mqtt_msg_json["volt"])
+        latitude.append(mqtt_msg_json["latitude"])
+        longitude.append(mqtt_msg_json["longitude"])
+        timestamp.append(mqtt_msg_json["timestamp"])
 
-            car_save.append("MB2")
-            accx_save.append(mqttmsg[1] * 0.061 / 1000)
-            accy_save.append(mqttmsg[2] * 0.061 / 1000)
-            accz_save.append(mqttmsg[3] * 0.061 / 1000)
-            rpm_save.append((mqttmsg[7] / 65535) * 5000)
-            speed_save.append((mqttmsg[8] / 65535) * 60)
-            temp_motor_save.append(mqttmsg[9])
-            flags_save.append(mqttmsg[10])
-            soc_save.append(mqttmsg[11])
-            temp_cvt_save.append(mqttmsg[12])
-            volt_save.append(mqttmsg[13])
-            latitude_save.append(mqttmsg[14])
-            longitude_save.append(mqttmsg[15])
-            timestamp_save.append(mqttmsg[16])
-        if mqttmsg[0] == 11:
-            car.append("MB1")
-            accx.append(mqttmsg[1] * 0.061 / 1000)
-            accy.append(mqttmsg[2] * 0.061 / 1000)
-            accz.append(mqttmsg[3] * 0.061 / 1000)
-            rpm.append((mqttmsg[7] / 65535) * 5000)
-            speed.append((mqttmsg[8] / 65535) * 60)
-            temp_motor.append(mqttmsg[9])
-            flags.append(mqttmsg[10])
-            soc.append(mqttmsg[11])
-            temp_cvt.append(mqttmsg[12])
-            volt.append(mqttmsg[13])
-            latitude.append(mqttmsg[14])
-            longitude.append(mqttmsg[15])
-            timestamp.append(mqttmsg[16])
-
-            car_save.append("MB1")
-            accx_save.append(mqttmsg[1] * 0.061 / 1000)
-            accy_save.append(mqttmsg[2] * 0.061 / 1000)
-            accz_save.append(mqttmsg[3] * 0.061 / 1000)
-            rpm_save.append((mqttmsg[7] / 65535) * 5000)
-            speed_save.append((mqttmsg[8] / 65535) * 60)
-            temp_motor_save.append(mqttmsg[9])
-            flags_save.append(mqttmsg[10])
-            soc_save.append(mqttmsg[11])
-            temp_cvt_save.append(mqttmsg[12])
-            volt_save.append(mqttmsg[13])
-            latitude_save.append(mqttmsg[14])
-            longitude_save.append(mqttmsg[15])
-            timestamp_save.append(mqttmsg[16])
 
     client.subscribe(topic)
     client.on_message = on_message
@@ -245,6 +194,9 @@ class Receiver(threading.Thread):
         pckt = list(unpack(FORMAT, msg))
         # print(pckt)
         # print((pckt[25]/65535)*5000)
+
+
+
         if pckt[0] == 22:
             car.append("MB2")
             accx.append(pckt[1] * 0.061 / 1000)
@@ -271,7 +223,7 @@ class Receiver(threading.Thread):
             soc_save.append(pckt[11])
             temp_cvt_save.append(pckt[12])
             volt_save.append(pckt[13])
-            latitude_save.append(pckt[14])
+            #latitude_save.append(pckt[14])
             longitude_save.append(pckt[15])
             timestamp_save.append(pckt[16])
         if pckt[0] == 11:
@@ -312,7 +264,7 @@ class Receiver(threading.Thread):
             'Aceleração Z': accz_save,
             'RPM': rpm_save,
             'Velocidade': speed_save,
-            'Temperatura Motor': temp_motor_save,
+            'Temperatura Moftor': temp_motor_save,
             'Flags': flags_save,
             'State of Charge': soc_save,
             'Temperatura CVT': temp_cvt_save,
@@ -341,12 +293,7 @@ class Receiver(threading.Thread):
         sqlmsg.append(str(latitude[-1]))
         sqlmsg.append(str(longitude[-1]))
         sqlmsg.append(str(timestamp[-1]))
-        if self.connected_mqtt:
-            MQTT_JSON = json.dumps({"car": f"{sqlmsg[0]}", "accx": f"{sqlmsg[1]}", "accy": f"{sqlmsg[2]}", "accz": f"{sqlmsg[3]}",
-            "rpm": f"{sqlmsg[4]}", "speed": f"{sqlmsg[5]}", "motor": f"{sqlmsg[6]}", "flags": f"{sqlmsg[7]}",
-            "soc": f"{sqlmsg[8]}", "cvt": f"{sqlmsg[9]}", "volt": f"{sqlmsg[10]}", "latitude": f"{sqlmsg[11]}",
-            "longitude": f"{sqlmsg[12]}", "timestamp": f"{sqlmsg[13]}"})
-            publish(self.client, topic, MQTT_JSON)
+
         #try:
             #self.conn.execute("INSERT INTO aquisitions VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                               #(self.id_count, sqlmsg[0], sqlmsg[1], sqlmsg[2], sqlmsg[3], sqlmsg[4], sqlmsg[5], sqlmsg[6], sqlmsg[7],
