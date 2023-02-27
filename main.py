@@ -441,10 +441,10 @@ class Ui_MainWindow(object):
     def update_map(self, coordinate):
 
         if coordinate == (0, 0):
-            coordinate = (-8.07305556, -37.266611111)
+            coordinate = (-23.162778, -45.795)
 
         self.m = folium.Map(
-            zoom_start=17,
+            zoom_start=18,
             location=coordinate
         )
         folium.Marker(location=coordinate).add_to(self.m)
@@ -560,7 +560,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Mangue Telemetria"))
 
-        self.update_map((-8.07305556, -37.266611111))
+        self.update_map((-23.162778, -45.795))
         self.update_plots([0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4])
         self.acc_x.setText(_translate("MainWindow", f"Acc x = {0}g"))
         self.acc_y.setText(_translate("MainWindow", f"Acc y = {0}g"))
