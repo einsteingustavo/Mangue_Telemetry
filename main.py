@@ -223,7 +223,7 @@ class Receiver(threading.Thread):
             soc_save.append(pckt[11])
             temp_cvt_save.append(pckt[12])
             volt_save.append(pckt[13])
-            #latitude_save.append(pckt[14])
+            latitude_save.append(pckt[14])
             longitude_save.append(pckt[15])
             timestamp_save.append(pckt[16])
         if pckt[0] == 11:
